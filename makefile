@@ -11,17 +11,18 @@ OC = arm-none-eabi-objcopy
 OD = arm-none-eabi-objdump
 OS = arm-none-eabi-size
 
-ASFLAGS = -mcpu=$(MCU_SPEC) -mthumb -Wall
+# ASFLAGS = -mcpu=$(MCU_SPEC) -mthumb -Wall
+# was using this for assembly startup files which i dont use at the moment 
 CFLAGS = -mcpu=$(MCU_SPEC) -mthumb -Wall -g -O0 -fmessage-length=0 -fno-builtin -Iinc -MMD -MP
 LFLAGS = -mcpu=$(MCU_SPEC) -mthumb -Wall \
          -nostdlib -nostartfiles -nodefaultlibs \
          -T$(LD_SCRIPT) \
          -Wl,-Map=$(BUILD_DIR)/$(TARGET).map
 
-AS_SRC = inc/startup_stm32f401xe.s
+STARTUP_SRC = inc/startup.c
 C_SRC  = src/main.c
 
-OBJS = $(addprefix $(BUILD_DIR)/, $(AS_SRC:.s=.o) $(C_SRC:.c=.o))
+OBJS = $(addprefix $(BUILD_DIR)/, $(STARTUP_SRC:.c=.o) $(C_SRC:.c=.o))
 
 DEPS = $(OBJS:.o=.d)
 
@@ -30,10 +31,6 @@ DEPS = $(OBJS:.o=.d)
 .PHONY: all clean flash erase
 
 all: $(BUILD_DIR)/$(TARGET).bin
-
-$(BUILD_DIR)/%.o: %.s
-	@mkdir -p $(dir $@)
-	$(CC) -x assembler-with-cpp $(ASFLAGS) -c $< -o $@
 
 $(BUILD_DIR)/%.o: %.c
 	@mkdir -p $(dir $@)
