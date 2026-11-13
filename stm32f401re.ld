@@ -22,11 +22,30 @@ SECTIONS
    *(.rodata)
    . = ALIGN(4);
    _etext = .;
+
   }>FLASH
+
   .data :
   {
-   .
+   . = ALIGN(4);
+   _sdata = .;
+   *(.data)
+   . = ALIGN(4);
+   _edata = .;
 
-  }
+  /* virtual memory address and load memory address */
+  }>SRAM AT> FLASH /*>(VMA) AT> (LMA)*/
+  /* initial values should be stored in FLASH
+   * but the section itself placed in SRAM */
+
+  .bss :
+  {
+   . = ALIGN(4);
+   _sbss = .;
+   *(.bss)
+   . = ALIGN(4);
+   _ebss = .;
+
+  }>SRAM
 
 }
